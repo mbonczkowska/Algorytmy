@@ -143,7 +143,7 @@ int menu(){
 
   case '2':{
     printf("\n\nWyswietlanie:\n\n");
-    printf("disgraph G{\n");
+    printf("digraph G{\n");
     B_Tree_Print(root);
     printf("\n}");
     getchar();
