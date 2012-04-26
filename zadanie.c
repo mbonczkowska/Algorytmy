@@ -4,14 +4,14 @@
 typedef struct node {
   int key;
   struct node* p;
-  struct node *rank;
+ 
 } t_node;
 
 t_node *Z[100];
 
 t_node* MakeSet(int k)
 {
-  // utworzenie zbioru reprezentujacego jednoelementowy zbior z kluczem k
+  /* utworzenie zbioru reprezentujacego jednoelementowy zbior z kluczem k */
   t_node *x;
   x = (t_node*) malloc(sizeof(t_node));
 
@@ -22,17 +22,16 @@ t_node* MakeSet(int k)
 
 t_node* FindSet(t_node* x)
 {
-  // zwraca reprezentanta zbioru do ktorego nalezy element (czyli wezel) x
-  // Wersja bez kompresji
+  /* zwraca reprezentanta zbioru do ktorego nalezy element (czyli wezel) x*/
+  /* Wersja bez kompresji*/
   if (x != x -> p) { return FindSet(x->p);}
   else {return x;}
 }
 
-t_node* Union(t_node* x,t_node* y)
+void Union(t_node* x,t_node* y)
 {
-  //zamienia zbiory o reprezentantach x,y w jeden zbior bedacy ich suma rozlaczn\
-a
-  //Wersja bez rangi
+  /*zamienia zbiory o reprezentantach x,y w jeden zbior bedacy ich suma rozlaczna */
+  /*Wersja bez rangi*/
   y -> p = x;
 }
 void createSets(int ilosc) {
@@ -62,7 +61,7 @@ void printSets(int ilosc) {
 int main()
 {
   int t1,t2;
-  int i,ilosc;
+  int ilosc;
   int wyb=0;
   printf("\nZbiory rozlaczne\n");
   printf("1 - wstaw\n");
@@ -71,7 +70,7 @@ int main()
   printf("4 - sprawdz\n");
   printf("5 - koniec\n");
   
-  //  scanf("%d",&wyb);
+  
   while(wyb!=5){
     printf("\nWybor: "); 
     scanf("%d",&wyb);
@@ -99,12 +98,11 @@ int main()
       printSets(ilosc);
       break;
     case 4:
-      printf("\n%d ",FindSet(Z[t1]));
-      printf("%d ",FindSet(Z[t2]));
+      /* printf("\n%d ",FindSet(Z[t1]));*/
+      /* printf("%d ",FindSet(Z[t2]));*/
       Union(FindSet(Z[t1]), FindSet(Z[t2]));
-      // printSets(ilosc);
-      printf("\n%d ",FindSet(Z[t1]));
-      printf("%d ",FindSet(Z[t2]));
+      /* printf("\n%d ",FindSet(Z[t1]));*/
+      /* printf("%d ",FindSet(Z[t2]));*/
       printSets(ilosc);
       break;
     case 5:
