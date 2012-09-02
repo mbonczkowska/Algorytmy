@@ -9,7 +9,7 @@ typedef struct wezel
   char litera;      /* litery */
   int czest;  /* czestotliwos wystapienia */
   struct wezel *nast;      /* wskaznik nastepnego wezla  */
-  struct wezel *lewy;     /* wskaznik lewj galezi */
+  struct wezel *lewy;     /* wskaznik lewej galezi */
   struct wezel *prawy;      /* wskaznik do prawej galezi */
 } typWezla;         
 
@@ -18,8 +18,8 @@ typedef struct tablica
 {
   char litera;      /* litery */
   unsigned long int bits; /* wartosc kodowanej litery */
-  char nbits; /*pietro od najmniejszego w po korzeniu */      
-  struct tablica *nast;     /* nastepny element w tabeli */
+  char nbits; /* ilosc bitow dla danej litery */      
+  struct tablica *nast;     /* nastepny element w tablicy */
 } typTablicy;       
 
 typTablicy *Tablica;
@@ -27,26 +27,25 @@ typTablicy *Tablica;
 void CreateTable(char c, int l, int v)
 {
   typTablicy *t, *p, *a;
-  /*  printf("v %d l %d\n",l,v);*/
+
   t = (typTablicy *)malloc(sizeof(typTablicy)); /* tworzy element tabeli */
   t->litera = c;                               
   t->bits = v;
   t->nbits = l;
-  /*printf("t->bits %u t->nbits %u t->litera %c\n",t->bits,t->nbits,t->litera);*/
-
-      if(Tablica==NULL)         /* jesli tablica jest NULL */
+ 
+  if(Tablica==NULL)         /* jesli tablica jest NULL */
      {
       Tablica = t;
       Tablica->nast = NULL;
-    }
+     }
   else
-  {
+   {
       /* szukaj znakow na liscie wg czestoliwosci */
      p = Tablica;
       a = NULL;
       
       while(p!=0 && p->litera < t->litera)
-	{
+	    {
 	a = p;      /* Zapisz bierzacy element do wstawienia */
        p = p->nast; /* przejdz do nastepnego */
     	}
@@ -54,13 +53,12 @@ void CreateTable(char c, int l, int v)
       t->nast = p;
       if(a!=0) a->nast = t;  
       else Tablica = t;    
-    }
+   }
    
 }
 /* Funkcja rekursywna do utowrzenia tabeli */
 void StworzTab(typWezla *n, int l, int v)
 {
-  /*  printf("rek l %d v %d\n",l,v); */
    if(n->prawy!=0) StworzTab( n->prawy, l+1, (v<<1)|1);
    if(n->lewy!=0) StworzTab( n->lewy, l+1, v<<1);
   if(n->prawy==0 && n->lewy==0) CreateTable(n->litera, l, v);
@@ -86,10 +84,10 @@ int main(int argc, char *argv[])
   char c;                
   typWezla *p;
   typTablicy *t;
-  int nElementow;        /* calkowita liczba elementow w tabicy */
+  int nElementow;        /* ilosc znakow nie powtarzajacych sie */
   long int Dlpliku = 0; /* dlugosc oryginalnego pliku */
   unsigned long int dWORD; /* znaki do kodowania */
-  int nBits;               /* calkowita liczba bitow */
+  int nBits;               /* polaczone kody */
 
   if(argc < 3)
     {
@@ -118,7 +116,7 @@ int main(int argc, char *argv[])
 	{
 	  r = Lista;
 	  a=NULL;
-	   while(r && r->litera<c)
+	   while(r && r->litera < c) /* jesli znak jest mniejszy od poprzedniego przejdz dalej */
 	       {
 	            a=r;
 	      r=r->nast;
@@ -133,7 +131,7 @@ int main(int argc, char *argv[])
 	      q->litera = c;
 	      q->czest = 1;
 	      q->lewy = q->prawy = NULL;
-	      q->nast = r;
+	      q->nast = r; 
 	       if(a) a->nast = q;        
 	    		else Lista = q;
      	    }
@@ -172,7 +170,6 @@ int main(int argc, char *argv[])
 	  now = NULL;
 	  while(p!=0 && p->czest < a->czest)
 	    {
-	      /*  printf(" p->czest %d  a->czest %d\n",p->czest,a->czest);*/
 	      now = p;      /* zapisz bierzacy element do wstawienia*/
 	      p = p->nast; 
 	    }
@@ -193,7 +190,7 @@ int main(int argc, char *argv[])
 
   /* Tworzenia drzewa */
   Drzewo = Lista;
-  while(Drzewo && Drzewo->nast) /* jesli istnieja co najmniej 2 pozycje na liscie spacja i znak*/
+  while(Drzewo && Drzewo->nast) /* jesli istnieja co najmniej 2 pozycje na liscie */
     {
      
       p = (typWezla *)malloc(sizeof(typWezla)); /* nowe drzewo */
@@ -203,8 +200,8 @@ int main(int argc, char *argv[])
       p->lewy = Drzewo;                          
       Drzewo = Drzewo->nast;                       /* nastepny wezel */
       p->czest = p->prawy->czest + 
-	p->lewy->czest;      /* suma czestotliwosci */ 
-      /*   printf("lit %c czest %d\n",p->litera,p->czest); */      
+	  p->lewy->czest;      /* suma czestotliwosci */ 
+       
       typWezla *nowe, *a;
 
       if(Drzewo==0) 
@@ -227,7 +224,7 @@ int main(int argc, char *argv[])
 	  if(a!=0) a->nast = p;  
 	  else Drzewo = p;    
 	}
-    }                                            /* orden de czest */
+    }                                          
 
   
   /* Budowanie binarnych tabieli kodow */
@@ -272,28 +269,26 @@ int main(int argc, char *argv[])
            
       /* Znajdz nie powtarzajace sie znaki: */
       t = ZnajdzChar(Tablica, c);
-      /* printf("po char nb %d b %d %c",t->nbits,t->bits,t->litera);*/
+     
       while(nBits + t->nbits > 32)
 	{
 	  c = dWORD >> (nBits-8);           /* usun 8 najbardziej znaczacych bitow  */	   
 	  fwrite(&c, sizeof(char), 1, fs);  /* i zapisz je do pliku */
 	  nBits -= 8;                       /* jest wiecej miejsca dla 8 bitow */
 	}
-      /* printf("1 dword %d t->nbits %d ",dWORD,t->nbits);*/     
+           
       dWORD <<= t->nbits; /* zrob miejsce dla nowego znaku */
-      /*printf("2 dword %d ",dWORD);*/
-       dWORD |= t->bits;
-      /*printf("3 dword %d nBit %d\n",dWORD,nBits);*/   
+      
+       dWORD |= t->bits; /* dodaj reszte znaku */
+         
       nBits += t->nbits;  /* aktualizacja liczby bitow */
     }
-  /*printf("%d dWORD %d\n",nBits,dWORD);*/
-  /* usun 4 pozostale bajty*/
+  
+
   while(nBits>0)
     {
-      /*  printf("%d \n",nBits);*/
       if(nBits>=8) c = dWORD >> (nBits-8);
-      else c = dWORD << (8-nBits);
-      /*printf("%d \n",c);*/
+      else c = dWORD << (8-nBits);   
       fwrite(&c, sizeof(char), 1, fs);
       nBits -= 8;
     }
